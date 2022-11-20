@@ -1,4 +1,4 @@
-import { UrlConfig } from "./types";
+import { Config } from "./types";
 
 export function parseBool(s: string): boolean {
   return ["1", "true", "on", "y", "yes"].includes(s.toLowerCase());
@@ -26,12 +26,10 @@ export function wildcard(pattern: string, target: string): boolean {
   return invert !== new RegExp(pattern).test(target);
 }
 
-export function getURLConfig(params: URLSearchParams): UrlConfig {
-  const config: UrlConfig = {};
+export function getConfig(params: URLSearchParams): Config {
+  const config: Config = {};
   for (const [key, value] of params) {
     switch (key) {
-      case "sig":
-        continue;
       case "allowBranches":
         config.allowBranches = value;
         break;
@@ -39,7 +37,7 @@ export function getURLConfig(params: URLSearchParams): UrlConfig {
         config.hideTags = parseBool(value);
         break;
       default:
-        break;
+        throw Error(`Unknown config: ${key}`);
     }
   }
   return config;

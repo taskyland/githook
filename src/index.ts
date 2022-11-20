@@ -1,7 +1,7 @@
-import { status } from "itty-router-extras";
-import filter from "./filter";
-import { getURLConfig } from "./util";
-import { sendWebhook } from "./webhook";
+import { status, text } from "itty-router-extras";
+import filter from "#lib/filter";
+import { getConfig } from "#lib/util";
+import { sendWebhook } from "#lib/webhook";
 export interface Env { }
 
 export default {
@@ -11,7 +11,10 @@ export default {
     _ctx: ExecutionContext
   ): Promise<Response | [Response, Record<string, string>]> {
     const url = new URL(req.url);
-
+    // redirect to repo if `GET /`
+    if (req.method === "GET" && url.pathname === "/") {
+      return text("Hello!");
+    }
     // everything else should be a POST
     if (req.method !== "POST") {
       return status(405);
@@ -23,18 +26,16 @@ export default {
       return status(400);
     }
     // extract data
-    const urlConfig = getURLConfig(url.searchParams);
+    const urlConfig = getConfig(url.searchParams);
     const data = await req.text();
     const json = JSON.parse(data);
 
-    // do the thing
+    // magic
     const filterReason = await filter(req.headers, json, urlConfig);
     if (filterReason !== null) {
-      console.log(filterReason);
-      return new Response(
-        `Ignored by webhook filter (reason: ${filterReason})`,
-        { status: 203 }
-      );
+      const res = `Ignored by webhook filter (reason: ${filterReason})`;
+      console.log(res);
+      return new Response(res, { status: 203 });
     }
 
     return await sendWebhook(id, token, req.headers, data);
