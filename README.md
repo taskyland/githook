@@ -6,9 +6,9 @@ An instance is hosted at https://githook.tasky.workers.dev/.
 
 # Configuration
 
-The webhook can be configured with the following:
+The webhook can be configured with the following params:
 
-- Only forward events from specific branches (allowBranches, simplified wildcard syntax) 
+- Only forward events from specific branches (`allowBranches`, simplified wildcard syntax) 
   - `abc*xyz` is equivalent to `/^(abc.*xyz)$/`
 
-- Ignore release tag updates (hideTags)
+- Ignore release tag updates (`hideTags`)

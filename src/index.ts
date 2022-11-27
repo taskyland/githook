@@ -1,19 +1,17 @@
-import { status, text } from "itty-router-extras";
+import { status } from "itty-router-extras";
 import filter from "#lib/filter";
 import { getConfig } from "#lib/util";
 import { sendWebhook } from "#lib/webhook";
-export interface Env { }
+import { View, Html } from "./lib/html";
 
 export default {
   async fetch(
-    req: Request,
-    _env: Env,
-    _ctx: ExecutionContext
+    req: Request
   ): Promise<Response | [Response, Record<string, string>]> {
     const url = new URL(req.url);
     // redirect to repo if `GET /`
     if (req.method === "GET" && url.pathname === "/") {
-      return text("Hello!");
+      return new View(Html);
     }
     // everything else should be a POST
     if (req.method !== "POST") {
