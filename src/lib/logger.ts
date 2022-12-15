@@ -19,8 +19,6 @@ class Logger {
   constructor(options: LoggerOptions) {
     this.webhook = options.webhook;
     this.name = "Githook";
-    this.icon =
-      "https://cdn.discordapp.com/avatars/963376966763937802/5ff0149d9a8d4376654a1cff4cf9763a.png";
 
     // Test if webhook and icon links are valid urls
     if (this.webhook) {

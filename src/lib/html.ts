@@ -54,7 +54,7 @@ export const Html = `
     :root {
       --bg: #16181d;
       --english-red: #b13c52;
-      --text-accent: #f1faee;
+      --text-accent: #c0caf5;
       --text-hover: #a8dadc;
     }
 
@@ -91,7 +91,6 @@ export const Html = `
     h3,
     h4,
     h5 {
-      color: #77B0BB;
       margin-bottom: 0.1rem;
     }
 

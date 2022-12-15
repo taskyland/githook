@@ -51,7 +51,7 @@ export default async function filter(
   }
 
   // ignore bots
-  if (login || login?.includes("[bot]") || login?.endsWith("-bot")) {
+  if ((login && login?.includes("[bot]")) || login?.endsWith("-bot")) {
     return `[bot]: ${login}`;
   }
 
