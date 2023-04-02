@@ -50,11 +50,6 @@ export default async function filter(
     if (json.action !== "created") return `[PR/comment]: '${json.action}'`;
   }
 
-  // ignore bots
-  if ((login && login?.includes("[bot]")) || login?.endsWith("-bot")) {
-    return `[bot]: ${login}`;
-  }
-
   let refType: "branch" | "tag" | undefined;
   let ref: string | undefined;
   if (event === "push") {
@@ -65,8 +60,8 @@ export default async function filter(
         refMatch[1] === "heads"
           ? "branch"
           : refMatch[1] == "tags"
-            ? "tag"
-            : undefined;
+          ? "tag"
+          : undefined;
       ref = refMatch[2];
     }
   } else if (["create", "delete"].includes(event)) {
@@ -75,19 +70,38 @@ export default async function filter(
     ref = json.ref;
   }
 
+  // if we have a `push` event for a tag, it will either not show up at all (create/delete),
+  // or will show up incorrectly (update).
+  // just ignore it, since tag creation/deletion also sends a separate (actually usable) event
+  if (event === "push" && refType === "tag") {
+    return `[Tag] '${ref}' pushed`;
+  }
+
+  // true if `allowBranches` is set and the current branch matches it
+  let isExplicitlyAllowedBranch = false;
+
   if (refType && ref) {
-    if (
-      refType == "branch" &&
-      config.allowBranches !== undefined &&
-      !wildcard(config.allowBranches, ref)
-    ) {
-      return `branch '${ref}' does not match ${JSON.stringify(
-        config.allowBranches
-      )}`;
+    if (refType == "branch" && config.allowBranches !== undefined) {
+      isExplicitlyAllowedBranch = wildcard(config.allowBranches, ref);
+      if (!isExplicitlyAllowedBranch) {
+        return `branch '${ref}' does not match ${JSON.stringify(
+          config.allowBranches
+        )}`;
+      }
     }
     if (refType == "tag" && config.hideTags === true) {
-      return `[tag]: '${ref}'`;
+      return `tag '${ref}'`;
     }
+  }
+
+  // ignore bots
+  if (
+    (!isExplicitlyAllowedBranch && // show bot pushes on allowed branches
+      login &&
+      login?.includes("[bot]")) ||
+    login?.endsWith("-bot")
+  ) {
+    return `[bot]: ${login}`;
   }
 
   return null;

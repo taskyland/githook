@@ -11,6 +11,17 @@ export class View extends Response {
     });
   }
 }
+export class Status extends Response {
+  constructor(view: string, status: number) {
+    super(view, {
+      status: status,
+      headers: Object.assign({
+        "Content-Type": "application/json; charset=utf-8",
+      }),
+    });
+  }
+}
+
 
 export const Html = `
 <!DOCTYPE html>

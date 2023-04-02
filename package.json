@@ -3,7 +3,6 @@
   "version": "0.0.0",
   "devDependencies": {
     "@cloudflare/workers-types": "^3.18.0",
-    "@types/itty-router-extras": "^0.4.0",
     "wrangler": "2.2.1"
   },
   "private": true,
@@ -11,8 +10,5 @@
     "start": "wrangler dev",
     "deploy": "wrangler publish"
   },
-  "dependencies": {
-    "itty-router": "^2.6.6",
-    "itty-router-extras": "^0.4.2"
-  }
+  "dependencies": {}
 }

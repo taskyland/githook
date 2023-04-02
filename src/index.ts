@@ -1,8 +1,7 @@
-import { status } from "itty-router-extras";
 import filter from "#lib/filter";
 import { getConfig } from "#lib/util";
 import { sendWebhook } from "#lib/webhook";
-import { View, Html } from "./lib/html";
+import { View, Html, Status } from "./lib/html";
 
 export default {
   async fetch(req: Request) {
@@ -13,13 +12,13 @@ export default {
     }
     // everything else should be a POST
     if (req.method !== "POST") {
-      return status(405);
+      return new Status("POSTs only", 405);
     }
 
     // split url into parts
     const [, id, token] = url.pathname.split("/");
     if (!id || !token) {
-      return status(400);
+      return new Status("Invalid", 400);
     }
     // extract data
     const urlConfig = getConfig(url.searchParams);
