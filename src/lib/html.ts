@@ -22,7 +22,6 @@ export class Status extends Response {
   }
 }
 
-
 export const Html = `
 <!DOCTYPE html>
 <html lang="en">
@@ -43,7 +42,7 @@ export const Html = `
     An instance is hosted at
     <a href="https://githook.tasky.workers.dev/">https://githook.tasky.workers.dev/</a>.
   </p>
-  <h1>Configuration</h1>
+  <h2>Configuration</h2>
   <p>The webhook can be configured with the following params:</p>
   <ul>
     <li>
@@ -54,6 +53,14 @@ export const Html = `
       <ul>
         <li>
           <code>abc*xyz</code> is equivalent to <code>/^(abc.*xyz)$/</code>
+        </li>
+      </ul>
+    </li>
+    <li>
+      <p>Ignore certain commit messages (<code>hideMessages</code>)</p>
+       <ul>
+        <li>
+          <code>update*</code> will ignore anything matching with update (Regex: <code>/^(update*)$/</code>)
         </li>
       </ul>
     </li>
@@ -80,11 +87,18 @@ export const Html = `
 
     a {
       color: var(--english-red);
-      text-decoration: none;
+      text-decoration: underline;
+      text-underline-offset: 4px;
+      text-decoration-style: solid;
+      text-decoration-color: transparent;
+      -webkit-text-decoration-color: transparent;
+      transition: text-decoration-color .25s;
     }
 
     a:hover {
       color: var(--text-hover);
+      text-decoration-color: var(--vp-c-brand);
+      -webkit-text-decoration-color: var(--vp-c-brand);
     }
 
     pre {
@@ -97,16 +111,8 @@ export const Html = `
       border: 0;
     }
 
-    h1,
-    h2,
-    h3,
-    h4,
-    h5 {
+    h1, h2 {
       margin-bottom: 0.1rem;
-    }
-
-    footer {
-      text-align: center;
     }
   </style>
 </body>

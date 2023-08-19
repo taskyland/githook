@@ -20,7 +20,7 @@ export default async function filter(
     json.action &&
     !["opened", "closed", "reopened"].includes(json.action)
   ) {
-    return `[PR]: '${json.action}'`;
+    return `[PR]: Ignored '${json.action}'`;
   }
 
   // ignore all issue actions except "opened", "deleted", "closed", "reopened", "transferred"
@@ -31,23 +31,25 @@ export default async function filter(
       json.action
     )
   ) {
-    return `[issue]: '${json.action}'`;
+    return `[Issue]: Ignored '${json.action}'`;
   }
 
   // ignore some PR review actions
   if (event === "pull_request_review") {
     // ignore edit/dismiss actions
-    if (json.action !== "submitted") return `[PR/review]: '${json.action}'`;
+    if (json.action !== "submitted")
+      return `[PR/review]: Ignored '${json.action}'`;
 
     // if comment (not approval or changes requested), ignore empty review body
     if (json.review?.state === "commented" && !json.review?.body)
-      return "[PR/Review]: empty";
+      return "[PR/review]: empty";
   }
 
   // ignore some PR comment events
   if (event === "pull_request_review_comment") {
     // ignore edit/delete actions
-    if (json.action !== "created") return `[PR/comment]: '${json.action}'`;
+    if (json.action !== "created")
+      return `[PR/comment]: Ignored '${json.action}'`;
   }
 
   let refType: "branch" | "tag" | undefined;
@@ -74,7 +76,7 @@ export default async function filter(
   // or will show up incorrectly (update).
   // just ignore it, since tag creation/deletion also sends a separate (actually usable) event
   if (event === "push" && refType === "tag") {
-    return `[Tag] '${ref}' pushed`;
+    return `[tag/push]: Ignored '${ref}'`;
   }
 
   // true if `allowBranches` is set and the current branch matches it
@@ -84,13 +86,24 @@ export default async function filter(
     if (refType == "branch" && config.allowBranches !== undefined) {
       isExplicitlyAllowedBranch = wildcard(config.allowBranches, ref);
       if (!isExplicitlyAllowedBranch) {
-        return `branch '${ref}' does not match ${JSON.stringify(
+        return `[Branch]: Branch '${ref}' does not match ${JSON.stringify(
           config.allowBranches
         )}`;
       }
     }
     if (refType == "tag" && config.hideTags === true) {
-      return `tag '${ref}'`;
+      return `[tag]: '${ref}'`;
+    }
+  }
+
+  // ignore commit messages
+  if (event === "push" && config.hideMessages !== undefined) {
+    let test = wildcard(
+      config.hideMessages,
+      json.head_commit.message as string
+    );
+    if (test) {
+      return `[Commit]: Ignored message ${json.head_commit.message}`;
     }
   }
 
@@ -101,7 +114,7 @@ export default async function filter(
       login?.includes("[bot]")) ||
     login?.endsWith("-bot")
   ) {
-    return `[bot]: ${login}`;
+    return `[bot]: Ignored ${login}`;
   }
 
   return null;

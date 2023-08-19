@@ -1,5 +1,5 @@
 import filter from "#lib/filter";
-import { getConfig } from "#lib/util";
+import { fixup, getConfig } from "#lib/util";
 import { sendWebhook } from "#lib/webhook";
 import { View, Html, Status } from "./lib/html";
 
@@ -23,7 +23,7 @@ export default {
     // extract data
     const urlConfig = getConfig(url.searchParams);
     const data = await req.text();
-    const json = JSON.parse(data);
+    const json: Record<string, any> = JSON.parse(data);
 
     // magic
     const filterReason = await filter(req.headers, json, urlConfig);
@@ -35,7 +35,8 @@ export default {
 
     let res: Response;
     try {
-      const webhookResult = await sendWebhook(id, token, req.headers, data);
+      fixup(json);
+      const webhookResult = await sendWebhook(id, token, req.headers, json);
       if (webhookResult instanceof Response) {
         res = webhookResult;
       } else {

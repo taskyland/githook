@@ -1,5 +1,6 @@
 export interface Config {
   allowBranches?: string;
+  hideMessages?: string;
   hideTags?: boolean;
 }
 
